@@ -14,6 +14,9 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { TriangleAlert } from "lucide-react";
 
 const SignUp = () => {
   const[form, setForm] = useState({
@@ -22,7 +25,11 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
+
   const[pending, setPending] = useState(false);
+  const[error, setError] = useState(null);
+  const router = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPending(true);
@@ -34,9 +41,18 @@ const SignUp = () => {
         },
         body: JSON.stringify(form),
       });
+      const user = await res.json();
       if(res.ok) {
-        const user = await res.json();
+        setPending(false);
+        toast.success(user.message);
+        router.push("/login");
         console.log(user);
+      } else if(res.status === 400) {
+        setPending(false);
+        setError(user.message);
+      } else if(res.status === 500) {
+        setPending(false);
+        setError(user.message);
       }
     } catch (error) {
       console.error(error);
@@ -45,6 +61,7 @@ const SignUp = () => {
   }
   return (
     <div className="h-full flex items-center justify-center bg-[#1b0918]">
+      
       SignUp Page
       <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
         <CardHeader>
@@ -52,6 +69,13 @@ const SignUp = () => {
           <CardDescription className="text-sm text-center text-accent-foreground">
             Use Email or Social Media to create an account
           </CardDescription>
+          </CardHeader>
+          {error && (
+            <div className="bg-destructive-15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+              <TriangleAlert />
+              <p>{error}</p>
+            </div>
+          )}
           <CardContent className="px-2 sm:px-6">
             <form onSubmit={handleSubmit} className="space-y-3">
               <Input
@@ -121,7 +145,6 @@ const SignUp = () => {
               </Link>
             </p>
           </CardContent>
-        </CardHeader>
       </Card>
     </div>
   );
