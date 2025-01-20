@@ -91,6 +91,7 @@ const handler = NextAuth({
           name: token.name,
           image: token.picture,
         };
+        //console.log("Session user:", session.user);
       }
       return session;
     },

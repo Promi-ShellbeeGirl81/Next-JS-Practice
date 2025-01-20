@@ -16,7 +16,7 @@ export default function CreateTask() {
         setError(null);    // Clear previous errors
     
         try {
-            const res = await fetch("/api/add-task", {
+            const res = await fetch("/api/tasks/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -31,16 +31,18 @@ export default function CreateTask() {
                 console.log('Response Body:', task);
 
                 toast.success(task.message || "Task created successfully!");
-                redirect("/");  // Redirect after success
-                setError(null);  // Ensure no error is shown after success
+                setError(task.message);
+                redirect("/");  
             } else {
                 // Handle error response from the server
                 const task = await res.json();  // Parse error response
-                setError(task.message || "An error occurred while creating the task.");
+                setError(null);
+                redirect("/");  
             }
         } catch (error) {
             console.error("Error during fetch request:", error);
-            setError("An unexpected error occurred. Please try again.");
+            setError(null);
+            redirect("/");  
         } finally {
             console.log("Resetting pending state...");
             setPending(false); // Always reset the pending state after the request is done

@@ -13,7 +13,7 @@ const Home = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch("/api/tasks"); // Endpoint to fetch all tasks
+        const response = await fetch("/api/tasks/show"); // Endpoint to fetch all tasks
         const data = await response.json();
         if (response.ok) {
           setTasks(data); // Set the retrieved tasks
